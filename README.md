@@ -1,10 +1,10 @@
 # GameTorch
 
-![Mule left walk](/mule.png)
+<img src="/mule.png" alt="Mule left walk" style="max-width:150px; max-height:150px;">
 
 walking to the left
 
-![Mule left walk final](/mule_correct.webp)
+<img src="/mule_correct.webp" alt="Mule left walk final" style="max-width:150px; max-height:150px;">
 
 you can
 
@@ -18,8 +18,6 @@ you can
 # GameTorch CLI
 
 Welcome to the **GameTorch** command-line interface and library. 🕹️⚡️
-
-⚠️ **Project status**: _Early development / under construction_.  APIs and CLI flags may change without notice.
 
 ---
 
