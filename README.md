@@ -1,6 +1,6 @@
 # GameTorch
 
-GameTorch is a 2d game asset generator and animatior. You can:
+[GameTorch](https://gametorch.app) is a 2d game asset generator and animator. You can:
 
 - ✨ Create, edit, and [animate](https://gametorch.app/sprite-animator) with English.
 - ⬆️ Publish to [Creative Commons](https://gametorch.app/commons) with one click.
@@ -19,7 +19,7 @@ Combined with the prompt "walking to the left":
 
 # GameTorch CLI
 
-Welcome to the **GameTorch** command-line interface and library. 🕹️⚡️
+Welcome to the [**GameTorch** command-line interface and library](https://github.com/gametorch/gametorch). 🕹️⚡️
 
 ---
 
