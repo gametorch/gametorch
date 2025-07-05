@@ -1,17 +1,17 @@
 # GameTorch
 
-<img src="/mule.png" alt="Mule left walk" style="max-width:150px; max-height:150px;">
-
-walking to the left
-
-<img src="/mule_correct.webp" alt="Mule left walk final" style="max-width:150px; max-height:150px;">
-
 you can
 
 - ✨ Create, edit, and [animate](https://gametorch.app/sprite-animator) with English.
 - ⬆️ Publish to [Creative Commons](https://gametorch.app/commons) with one click.
 - 💰 Get rewarded if your assets get featured.
 - 🎨 Free, no sign up required [image to pixel art tool](https://gametorch.app/image-to-pixel-art)!
+
+<img src="/mule.png" alt="Mule left walk" width="150">
+
+walking to the left
+
+<img src="/mule_correct.webp" alt="Mule left walk final" width="150">
 
 ---
 
