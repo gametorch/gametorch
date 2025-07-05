@@ -1,15 +1,17 @@
 # GameTorch
 
-you can
+GameTorch is a 2d game asset generator and animatior. You can:
 
 - ✨ Create, edit, and [animate](https://gametorch.app/sprite-animator) with English.
 - ⬆️ Publish to [Creative Commons](https://gametorch.app/commons) with one click.
 - 💰 Get rewarded if your assets get featured.
 - 🎨 Free, no sign up required [image to pixel art tool](https://gametorch.app/image-to-pixel-art)!
 
+For example:
+
 <img src="/mule.png" alt="Mule left walk" width="150">
 
-walking to the left
+Combined with the prompt "walking to the left":
 
 <img src="/mule_correct.webp" alt="Mule left walk final" width="150">
 
