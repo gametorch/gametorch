@@ -14,6 +14,9 @@ pub struct Cli {
     /// Use local server (http://localhost:8000) instead of production.
     #[arg(short = 'l', long = "local", global = true)]
     local: bool,
+    /// Output raw computer-friendly JSON (no human status replacement)
+    #[arg(short = 'p', long = "porcelain", global = true)]
+    porcelain: bool,
     #[command(subcommand)]
     command: Commands,
 }
@@ -31,8 +34,8 @@ pub enum Commands {
 pub enum AnimationCommands {
     /// Retrieve an existing animation
     Get {
-        /// The identifier of the animation to fetch
-        id: String,
+        /// The identifier of the animation to fetch (omit to list all animations)
+        id: Option<String>,
     },
     /// Generate a new animation
     Generate {
@@ -60,12 +63,15 @@ pub enum AnimationCommands {
         #[arg(short = 'd', long = "duration", value_name = "SECONDS", default_value_t = 5)]
         duration: u32,
     },
-    /// Crop an animation
+    /// Display instructions for cropping an animation result
     Crop {
-        /// Input file or animation identifier
-        input: String,
-        /// (Optional) Output file path. If omitted, will overwrite input or write to default.
-        output: Option<String>,
+        /// (Optional) Animation result ID. If omitted, prints general instructions.
+        animation_result_id: Option<String>,
+    },
+    /// Regenerate an animation (note: this takes an animation_id, **not** an animation_result_id)
+    Regenerate {
+        /// The identifier of the animation to regenerate
+        animation_id: String,
     },
 }
 
@@ -90,23 +96,78 @@ async fn main() {
         "https://gametorch.app"
     };
 
+    // Helper to map numeric status to human string.
+    fn replace_status_recursive(value: &mut serde_json::Value) {
+        use serde_json::Value;
+        match value {
+            Value::Object(map) => {
+                if let Some(status_val) = map.get_mut("status") {
+                    if let Some(num) = status_val.as_i64() {
+                        let new_str = match num {
+                            1 => "generating",
+                            2 => "complete",
+                            3 => "failed and refunded",
+                            _ => return,
+                        };
+                        *status_val = Value::String(new_str.to_string());
+                    }
+                }
+                for v in map.values_mut() {
+                    replace_status_recursive(v);
+                }
+            }
+            Value::Array(arr) => {
+                for v in arr {
+                    replace_status_recursive(v);
+                }
+            }
+            _ => {}
+        }
+    }
+
     // Dispatch based on the parsed commands
     match cli.command {
         Commands::Animations { action } => match action {
             AnimationCommands::Get { id } => {
-                match animations::get(&api_key, base_url, &id).await {
-                    Ok(json) => {
-                        println!("{}", serde_json::to_string_pretty(&json).unwrap());
+                if let Some(id) = id {
+                    match animations::get(&api_key, base_url, &id).await {
+                        Ok(mut json) => {
+                            if !cli.porcelain {
+                                replace_status_recursive(&mut json);
+                            }
+                            println!("{}", serde_json::to_string_pretty(&json).unwrap());
+                        }
+                        Err(err) => {
+                            eprintln!("Failed to fetch animation: {}", err);
+                            std::process::exit(1);
+                        }
                     }
-                    Err(err) => {
-                        eprintln!("Failed to fetch animation: {}", err);
-                        std::process::exit(1);
+                } else {
+                    match animations::list(&api_key, base_url).await {
+                        Ok(mut json) => {
+                            if !cli.porcelain {
+                                replace_status_recursive(&mut json);
+                            }
+                            println!("{}", serde_json::to_string_pretty(&json).unwrap());
+                        }
+                        Err(err) => {
+                            eprintln!("Failed to list animations: {}", err);
+                            std::process::exit(1);
+                        }
+                    }
+                    // Apply human-readable status mapping for list as well
+                    if !cli.porcelain {
+                        // After successful listing above, json is already printed
+                        // We handled inside Ok branch before printing.
                     }
                 }
             }
             AnimationCommands::Generate { prompt, block, output_file, input_image, model_id, model_name, silent, duration } => {
                 match animations::generate(&api_key, base_url, &prompt, duration, block, output_file.as_deref(), input_image.as_deref(), model_id, model_name.as_deref(), silent).await {
-                    Ok(json) => {
+                    Ok(mut json) => {
+                        if !cli.porcelain {
+                            replace_status_recursive(&mut json);
+                        }
                         println!("{}", serde_json::to_string_pretty(&json).unwrap());
                     }
                     Err(err) => {
@@ -115,8 +176,33 @@ async fn main() {
                     }
                 }
             }
-            AnimationCommands::Crop { input, output } => {
-                println!("[stub] Cropping animation from '{}' to '{:?}' with API key: {} (base URL: {})", input, output, api_key, base_url);
+            AnimationCommands::Crop { animation_result_id } => {
+                match animation_result_id {
+                    Some(id) => {
+                        println!(
+                            "Open this page in your browser: https://gametorch.app/sprite-animator/crop-and-trim/{}",
+                            id
+                        );
+                    }
+                    None => {
+                        println!(
+                            "Cropping is only available through the GameTorch web UI.\n");
+                        println!(
+                            "1. Open this link in your browser: https://gametorch.app/sprite-animator.\n2. Select the animation that contains the desired result.\n3. Choose the specific animation result and click \"Crop & Trim\".\n",
+                        );
+                    }
+                }
+            }
+            AnimationCommands::Regenerate { animation_id } => {
+                match animations::regenerate(&api_key, base_url, &animation_id).await {
+                    Ok(json) => {
+                        println!("{}", serde_json::to_string_pretty(&json).unwrap());
+                    }
+                    Err(err) => {
+                        eprintln!("Failed to regenerate animation: {}", err);
+                        std::process::exit(1);
+                    }
+                }
             }
         },
     }

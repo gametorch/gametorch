@@ -1,3 +1,20 @@
+# GameTorch
+
+![Mule left walk](/mule.png)
+
+walking to the left
+
+![Mule left walk final](/mule_correct.webp)
+
+you can
+
+- ✨ Create, edit, and [animate](https://gametorch.app/sprite-animator) with English.
+- ⬆️ Publish to [Creative Commons](https://gametorch.app/commons) with one click.
+- 💰 Get rewarded if your assets get featured.
+- 🎨 Free, no sign up required [image to pixel art tool](https://gametorch.app/image-to-pixel-art)!
+
+---
+
 # GameTorch CLI
 
 Welcome to the **GameTorch** command-line interface and library. 🕹️⚡️
