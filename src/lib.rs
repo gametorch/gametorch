@@ -6,12 +6,12 @@
 pub mod animations {
     use serde_json::Value;
     use reqwest;
-    use base64;
+    use base64::{engine::general_purpose, Engine as _};
 
-    /// Fetch an animation together with its results.
+    /// Fetch animation results for a given animation.
     ///
-    /// Returns a JSON object of shape:
-    /// `{ "animation": { ... }, "animation_results": [ ... ] }`.
+    /// Hits `GET /api/animation_results/<animation_id>` and returns the JSON as-is
+    /// (array or object depending on backend version).
     pub async fn get(
         api_key: &str,
         base_url: &str,
@@ -19,10 +19,9 @@ pub mod animations {
     ) -> Result<Value, Box<dyn std::error::Error + Send + Sync>> {
         let client = reqwest::Client::new();
 
-        // Fetch the animation itself
-        let anim_url = format!("{}/api/animation/{}", base_url, animation_id);
-        let animation: Value = client
-            .get(&anim_url)
+        let url = format!("{}/api/animation_results/{}", base_url, animation_id);
+        let json: Value = client
+            .get(&url)
             .header("Authorization", format!("Bearer {}", api_key))
             .send()
             .await?
@@ -30,10 +29,19 @@ pub mod animations {
             .json()
             .await?;
 
-        // Fetch the animation results
-        let results_url = format!("{}/api/animation_results/{}", base_url, animation_id);
-        let animation_results: Value = client
-            .get(&results_url)
+        Ok(json)
+    }
+
+    /// List all animations belonging to the current user.
+    pub async fn list(
+        api_key: &str,
+        base_url: &str,
+    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync>> {
+        let client = reqwest::Client::new();
+
+        let url = format!("{}/api/animations", base_url);
+        let animations: Value = client
+            .get(&url)
             .header("Authorization", format!("Bearer {}", api_key))
             .send()
             .await?
@@ -41,12 +49,7 @@ pub mod animations {
             .json()
             .await?;
 
-        let combined = serde_json::json!({
-            "animation": animation,
-            "animation_results": animation_results,
-        });
-
-        Ok(combined)
+        Ok(animations)
     }
 
     /// Generate a new animation from a prompt.
@@ -84,7 +87,7 @@ pub mod animations {
         // Prepare input_image_base64 if provided
         let input_image_base64 = if let Some(path) = input_image_path {
             let bytes = tokio::fs::read(path).await?;
-            base64::encode(bytes)
+            general_purpose::STANDARD.encode(bytes)
         } else {
             String::new()
         };
@@ -275,5 +278,29 @@ pub mod animations {
     #[allow(unused_variables)]
     pub async fn crop(input: &str, output: Option<&str>) {
         unimplemented!("crop animation");
+    }
+
+    /// Regenerate an animation using the same parameters as an existing one.
+    ///
+    /// Hits `POST /api/animation/regenerate/<animation_id>` and returns the JSON
+    /// response (shape: `{ "animation_id": <new_id> }`).
+    pub async fn regenerate(
+        api_key: &str,
+        base_url: &str,
+        animation_id: &str,
+    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync>> {
+        let client = reqwest::Client::new();
+        let url = format!("{}/api/animation/regenerate/{}", base_url, animation_id);
+
+        let json: Value = client
+            .post(&url)
+            .header("Authorization", format!("Bearer {}", api_key))
+            .send()
+            .await?
+            .error_for_status()? // surface non-2xx responses
+            .json()
+            .await?;
+
+        Ok(json)
     }
 } 
