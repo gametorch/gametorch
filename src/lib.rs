@@ -68,10 +68,7 @@ pub mod animations {
         model_name: Option<&str>,
         silent: bool,
     ) -> Result<Value, Box<dyn std::error::Error + Send + Sync>> {
-        // Validate duration
-        if duration_seconds != 5 && duration_seconds != 10 {
-            return Err("duration must be either 5 or 10 seconds".into());
-        }
+        // No local duration validation; let the backend validate and return any errors.
 
         let client = reqwest::Client::new();
 
@@ -115,10 +112,10 @@ pub mod animations {
                 );
             }
             (None, None) => {
-                // default to id 6
+                // default to id 9
                 body_map.insert(
                     "animation_model_id".to_string(),
-                    serde_json::Value::Number(6.into()),
+                    serde_json::Value::Number(9.into()),
                 );
             }
             _ => unreachable!(),
@@ -127,15 +124,21 @@ pub mod animations {
         let body = serde_json::Value::Object(body_map);
 
         let post_url = format!("{}/api/animation", base_url);
-        let post_resp: Value = client
+        let resp = client
             .post(&post_url)
             .header("Authorization", format!("Bearer {}", api_key))
             .json(&body)
             .send()
-            .await?
-            .error_for_status()?
-            .json()
             .await?;
+
+        if !resp.status().is_success() {
+            // Try to read full body text for better error visibility.
+            let status = resp.status();
+            let text = resp.text().await.unwrap_or_else(|_| "<failed to read body>".to_string());
+            return Err(format!("request failed (HTTP {}): {}", status, text).into());
+        }
+
+        let post_resp: Value = resp.json().await?;
 
         let animation_id = post_resp
             .get("animation_id")
@@ -302,5 +305,25 @@ pub mod animations {
             .await?;
 
         Ok(json)
+    }
+
+    /// Fetch a list of available animation models with their details (cost, supported durations, etc.).
+    pub async fn models(
+        api_key: &str,
+        base_url: &str,
+    ) -> Result<Value, Box<dyn std::error::Error + Send + Sync>> {
+        let client = reqwest::Client::new();
+
+        let url = format!("{}/api/animation/models", base_url);
+        let models: Value = client
+            .get(&url)
+            .header("Authorization", format!("Bearer {}", api_key))
+            .send()
+            .await?
+            .error_for_status()?
+            .json()
+            .await?;
+
+        Ok(models)
     }
 } 
