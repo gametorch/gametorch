@@ -65,8 +65,15 @@ script. It wraps the full public API — catalogs, projects, sprites, sounds,
 animations, exports, labels, art styles, usage and API keys — with human-readable
 output by default and `--json` whenever you need to parse it.
 
-It lives in the [Rust SDK](https://github.com/gametorch/gametorch-rs) repository
-and builds a binary named `gametorch`:
+Install it straight from [crates.io](https://crates.io/crates/gametorch-cli):
+
+```sh
+cargo install gametorch-cli
+```
+
+This installs a binary named `gametorch`. Prefer to build from source? The CLI
+lives in the [Rust SDK](https://github.com/gametorch/gametorch-rs) repository,
+so you can clone it and install it directly:
 
 ```sh
 git clone https://github.com/gametorch/gametorch-rs
@@ -97,7 +104,7 @@ out of the box.
 
 | Language | Install | Repository |
 | --- | --- | --- |
-| **Rust** | `cargo add gametorch` | [gametorch/gametorch-rs](https://github.com/gametorch/gametorch-rs) |
+| **Rust** | [`cargo add gametorch`](https://crates.io/crates/gametorch) | [gametorch/gametorch-rs](https://github.com/gametorch/gametorch-rs) |
 | **TypeScript** | `npm install gametorch` | [gametorch/gametorch-ts](https://github.com/gametorch/gametorch-ts) |
 | **Python** | `pip install gametorch` | [gametorch/pygametorch](https://github.com/gametorch/pygametorch) |
 | **Go** | `go get github.com/gametorch/gogametorch` | [gametorch/gogametorch](https://github.com/gametorch/gogametorch) |
