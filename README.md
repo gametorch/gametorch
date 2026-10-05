@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="v2_logo_white_bg.png" alt="GameTorch" width="440">
+  <img src="v2_logo_white_bg.png" alt="GAMETORCH" width="440">
 </p>
 
-<h1 align="center">GameTorch</h1>
+<h1 align="center">GAMETORCH</h1>
 
 <p align="center">
   <strong>Turn a sentence into game-ready sprites, sound effects and animations.</strong>
@@ -18,9 +18,9 @@
 
 ---
 
-GameTorch is a generative asset studio for game developers. Describe what you
+GAMETORCH is a generative asset studio for game developers. Describe what you
 need — *"a red fox, side view"*, *"a sword unsheathing"*, *"walking to the
-left"* — and GameTorch produces production-ready assets you can drop straight
+left"* — and GAMETORCH produces production-ready assets you can drop straight
 into your project.
 
 - **Sprites** — transparent, game-ready PNGs generated or edited from a prompt,
@@ -39,7 +39,7 @@ tool needs to generate assets safely.
 
 ## Works with what you use
 
-GameTorch exports are built to drop straight into your pipeline:
+GAMETORCH exports are built to drop straight into your pipeline:
 
 `Godot` · `Unity` · `Unreal` · `Bevy` · `GameMaker` · `Aseprite` ·
 `TexturePacker` · `Uniform Grid PNG` · and plain sprites, sounds and animations.
@@ -60,7 +60,7 @@ faster, simpler and more reliable than a stateful shim in front of it.
 
 ## Command-line interface
 
-The CLI is the fastest way to drive GameTorch, especially from an agent or a
+The CLI is the fastest way to drive GAMETORCH, especially from an agent or a
 script. It wraps the full public API — catalogs, projects, sprites, sounds,
 animations, exports, labels, art styles, usage and API keys — with human-readable
 output by default and `--json` whenever you need to parse it.
@@ -134,5 +134,5 @@ SDKs and CLI handle all of that for you.
 
 ## License
 
-MIT © GameTorch LLC. See the individual SDK repositories for their license
+MIT © GAMETORCH LLC. See the individual SDK repositories for their license
 details.
