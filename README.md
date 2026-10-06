@@ -124,6 +124,31 @@ const job = await client
   .send();
 ```
 
+## Animating an existing sprite
+
+Animations are generated either **from scratch** or from a **reference image**.
+To make an animation move a sprite you already generated, pass that sprite's
+**asset id** as `base_asset_id`; omit it and the animation is generated
+standalone. This is the most common thing to get wrong, so it is worth stating
+plainly:
+
+- **API** — set `base_asset_id` on `POST /projects/{project_id}/animation-runs`.
+  The `/estimate` endpoint accepts it too. The value is the sprite **asset**
+  UUID from `GET /projects/{project_id}/sprite-assets` — *not* the sprite
+  generation id.
+- **CLI** — pass the same id with `--base-asset-id`, and filter a sprite's
+  animations with it as well:
+
+```sh
+gametorch sprite assets --project my-game                 # find the sprite asset id
+gametorch animation generate --project my-game \
+  --prompt "draw the sword" --animation-model ash \
+  --duration 4 --base-asset-id <asset-id> --wait
+```
+
+Every animation run reports its `base_asset_id` back (`null` when generated from
+scratch), so an animation can always be traced to the sprite it was built from.
+
 ## Authentication
 
 Create an API key in the [dashboard](https://gametorch.app) and pass it as a
